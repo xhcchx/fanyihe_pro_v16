@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>翻译盒 Pro · 通话特别版 V1.6</title>
+</head>
+<body>
+  <h2>翻译盒 Pro · 通话特别版 V1.6</h2>
+  <p>仅授权邮箱可用。首次使用请填写邮箱与访问口令。</p>
+  <div>
+    <label>授权邮箱：</label>
+    <input id="email" placeholder="wenter831@gmail.com" style="width: 280px;">
+  </div>
+  <div>
+    <label>访问口令：</label>
+    <input id="token" placeholder="由我方提供" style="width: 280px;">
+  </div>
+  <hr/>
+  <div>
+    <textarea id="input" rows="6" style="width: 100%;" placeholder="输入要翻译的内容"></textarea>
+  </div>
+  <button id="btn">翻译</button>
+  <pre id="out" style="white-space:pre-wrap; background:#f5f5f5; padding:10px;"></pre>
+
+  <script>
+    async function callTranslate() {
+      const email = document.getElementById('email').value.trim();
+      const token = document.getElementById('token').value.trim();
+      const text = document.getElementById('input').value.trim();
+      const out = document.getElementById('out');
+      out.textContent = '翻译中…';
+      try {
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Email': email,
+            'X-Access-Token': token
+          },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '翻译失败');
+        out.textContent = data.result || '';
+      } catch (e) {
+        out.textContent = '错误：' + e.message;
+      }
+    }
+    document.getElementById('btn').addEventListener('click', callTranslate);
+  </script>
+</body>
+</html>
